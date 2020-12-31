@@ -160,17 +160,17 @@ function showChat() {
 function queryEntry(uid, callback) {
 	var route = 'gate.gateHandler.queryEntry';
 	pomelo.init({
-		host: "acs.acgtongmeng.com",
-		port: 3114,
+        host: Pinus_server.gateHost,
+        port: Pinus_server.gatePort,
 		log: true
 	}, function() {
 		pomelo.request(route, {
 			uid: uid
 		}, function(data) {
             pomelo.disconnect();
-            data.host = "acs.acgtongmeng.com";
+            data.host = Pinus_server.connectorHost;
             if (data.port == 3050) {
-                data.port = 3150;
+                data.port = Pinus_server.connectorPort;
             }
 			if(data.code === 500) {
 				showError(LOGIN_ERROR);
