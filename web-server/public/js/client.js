@@ -80,15 +80,15 @@ function tip(type, name) {
 	var tip,title;
 	switch(type){
 		case 'online':
-			tip = name + ' is online now.';
+			tip = name + ' 上线了。';
 			title = 'Online Notify';
 			break;
 		case 'offline':
-			tip = name + ' is offline now.';
+			tip = name + ' 离开了。';
 			title = 'Offline Notify';
 			break;
 		case 'message':
-			tip = name + ' is saying now.'
+			tip = name + ' 正在说话。'
 			title = 'Message Notify';
 			break;
 	}
@@ -160,14 +160,18 @@ function showChat() {
 function queryEntry(uid, callback) {
 	var route = 'gate.gateHandler.queryEntry';
 	pomelo.init({
-		host: "127.0.0.1",
-		port: 3014,
+		host: "acs.acgtongmeng.com",
+		port: 3114,
 		log: true
 	}, function() {
 		pomelo.request(route, {
 			uid: uid
 		}, function(data) {
-			pomelo.disconnect();
+            pomelo.disconnect();
+            data.host = "acs.acgtongmeng.com";
+            if (data.port == 3050) {
+                data.port = 3150;
+            }
 			if(data.code === 500) {
 				showError(LOGIN_ERROR);
 				return;
@@ -186,15 +190,15 @@ $(document).ready(function() {
 		console.info("onChat",data)
 		addMessage(data.from, data.target, data.msg);
 		$("#chatHistory").show();
-		if(data.from !== username)
-			tip('message', data.from);
+		// if(data.from !== username)
+		// 	tip('message', data.from);
 	});
 
 	//update user list
 	pomelo.on('onAdd', function(data) {
 		console.info("onAdd",data)
 		var user = data.user;
-		tip('online', user);
+		// tip('online', user);
 		addUser(user);
 	});
 
@@ -202,7 +206,7 @@ $(document).ready(function() {
 	pomelo.on('onLeave', function(data) {
 		console.info("onLeave",data)
 		var user = data.user;
-		tip('offline', user);
+		// tip('offline', user);
 		removeUser(user);
 	});
 
