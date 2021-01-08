@@ -24,8 +24,8 @@
   }
 
   var root = window;
-  var pomelo = Object.create(EventEmitter.prototype); // object extend from object
-  root.pomelo = pomelo;
+  var pinus = Object.create(EventEmitter.prototype); // object extend from object
+  root.pinus = pinus;
   var socket = null;
   var reqId = 0;
   var callbacks = {};
@@ -58,7 +58,7 @@
 
   var initCallback = null;
 
-  pomelo.init = function(params, cb){
+  pinus.init = function(params, cb){
     initCallback = cb;
     var host = params.host;
     var port = params.port;
@@ -86,12 +86,12 @@
       }
     };
     var onerror = function(event) {
-      pomelo.emit('io-error', event);
+      pinus.emit('io-error', event);
       console.error('socket error: ', event);
     };
     var onclose = function(event){
-      pomelo.emit('close',event);
-      pomelo.emit('disconnect', event);
+      pinus.emit('close',event);
+      pinus.emit('disconnect', event);
       console.error('socket close: ', event);
     };
     socket = new WebSocket(url);
@@ -102,7 +102,7 @@
     socket.onclose = onclose;
   };
 
-  pomelo.disconnect = function() {
+  pinus.disconnect = function() {
     if(socket) {
       if(socket.disconnect) socket.disconnect();
       if(socket.close) socket.close();
@@ -120,7 +120,7 @@
     }
   };
 
-  pomelo.request = function(route, msg, cb) {
+  pinus.request = function(route, msg, cb) {
     if(arguments.length === 2 && typeof msg === 'function') {
       cb = msg;
       msg = {};
@@ -139,7 +139,7 @@
     routeMap[reqId] = route;
   };
 
-  pomelo.notify = function(route, msg) {
+  pinus.notify = function(route, msg) {
     msg = msg || {};
     sendMessage(0, route, msg);
   };
@@ -148,7 +148,7 @@
     var type = reqId ? Message.TYPE_REQUEST : Message.TYPE_NOTIFY;
 
     //compress message by protobuf
-    var protos = !!pomelo.data.protos?pomelo.data.protos.client:{};
+    var protos = !!pinus.data.protos?pinus.data.protos.client:{};
     if(!!protos[route]){
       msg = protobuf.encode(route, msg);
     }else{
@@ -157,8 +157,8 @@
 
 
     var compressRoute = 0;
-    if(pomelo.dict && pomelo.dict[route]){
-      route = pomelo.dict[route];
+    if(pinus.dict && pinus.dict[route]){
+      route = pinus.dict[route];
       compressRoute = 1;
     }
 
@@ -206,20 +206,20 @@
       heartbeatTimeoutId = setTimeout(heartbeatTimeoutCb, gap);
     } else {
       console.error('server heartbeat timeout');
-      pomelo.emit('heartbeat timeout');
-      pomelo.disconnect();
+      pinus.emit('heartbeat timeout');
+      pinus.disconnect();
     }
   };
 
   var handshake = function(data){
     data = JSON.parse(Protocol.strdecode(data));
     if(data.code === RES_OLD_CLIENT) {
-      pomelo.emit('error', 'client version not fullfill');
+      pinus.emit('error', 'client version not fullfill');
       return;
     }
 
     if(data.code !== RES_OK) {
-      pomelo.emit('error', 'handshake fail');
+      pinus.emit('error', 'handshake fail');
       return;
     }
 
@@ -247,12 +247,12 @@
 
     msg.body = deCompose(msg);
 
-    processMessage(pomelo, msg);
+    processMessage(pinus, msg);
   };
 
   var onKick = function(data) {
     data = JSON.parse(Protocol.strdecode(data));
-    pomelo.emit('onKick', data);
+    pinus.emit('onKick', data);
   };
 
   handlers[Package.TYPE_HANDSHAKE] = handshake;
@@ -271,10 +271,10 @@
     }
   };
 
-  var processMessage = function(pomelo, msg) {
+  var processMessage = function(pinus, msg) {
     if(!msg.id) {
       // server push message
-      pomelo.emit(msg.route, msg.body);
+      pinus.emit(msg.route, msg.body);
     }
 
     //if have a id then find the callback function with the request
@@ -289,15 +289,15 @@
     return;
   };
 
-  var processMessageBatch = function(pomelo, msgs) {
+  var processMessageBatch = function(pinus, msgs) {
     for(var i=0, l=msgs.length; i<l; i++) {
-      processMessage(pomelo, msgs[i]);
+      processMessage(pinus, msgs[i]);
     }
   };
 
   var deCompose = function(msg){
-    var protos = !!pomelo.data.protos?pomelo.data.protos.server:{};
-    var abbrs = pomelo.data.abbrs;
+    var protos = !!pinus.data.protos?pinus.data.protos.server:{};
+    var abbrs = pinus.data.abbrs;
     var route = msg.route;
 
     //Decompose route from dict
@@ -333,28 +333,28 @@
     }
   };
 
-  //Initilize data used in pomelo client
+  //Initilize data used in pinus client
   var initData = function(data){
     if(!data || !data.sys) {
       return;
     }
-    pomelo.data = pomelo.data || {};
+    pinus.data = pinus.data || {};
     var dict = data.sys.dict;
     var protos = data.sys.protos;
 
     //Init compress dict
     if(dict){
-      pomelo.data.dict = dict;
-      pomelo.data.abbrs = {};
+      pinus.data.dict = dict;
+      pinus.data.abbrs = {};
 
       for(var route in dict){
-        pomelo.data.abbrs[dict[route]] = route;
+        pinus.data.abbrs[dict[route]] = route;
       }
     }
 
     //Init protobuf protos
     if(protos){
-      pomelo.data.protos = {
+      pinus.data.protos = {
         server : protos.server || {},
         client : protos.client || {}
       };
@@ -364,5 +364,5 @@
     }
   };
 
-  module.exports = pomelo;
+  module.exports = pinus;
 })();

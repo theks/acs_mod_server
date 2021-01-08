@@ -1,15 +1,15 @@
 {
-  "name": "pomelo-jsclient-websocket",
-  "description": "pomelo-jsclient-websocket",
+  "name": "pinus-jsclient-websocket",
+  "description": "pinus-jsclient-websocket",
   "keywords": [
-    "pomelo",
+    "pinus",
     "jsclient",
     "websocket"
   ],
   "version": "0.0.1",
-  "main": "lib/pomelo-client.js",
+  "main": "lib/pinus-client.js",
   "scripts": [
-    "lib/pomelo-client.js"
+    "lib/pinus-client.js"
   ],
-  "repo": "https://github.com/pomelonode/pomelo-jsclient-websocket"
+  "repo": "https://github.com/pinusnode/pinus-jsclient-websocket"
 }

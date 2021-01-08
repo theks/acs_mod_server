@@ -12,7 +12,7 @@ preload();
  * Init app for client.
  */
 let app = pinus.createApp();
-app.set('name', 'testServer');
+app.set('name', 'otherworldhotel');
 
 // app configuration
 app.configure('production|development', 'connector', function () {

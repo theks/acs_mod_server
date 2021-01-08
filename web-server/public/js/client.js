@@ -1,4 +1,4 @@
-var pomelo = window.pomelo;
+var pinus = window.pinus;
 var username;
 var users;
 var rid;
@@ -159,15 +159,15 @@ function showChat() {
 // query connector
 function queryEntry(uid, callback) {
 	var route = 'gate.gateHandler.queryEntry';
-	pomelo.init({
+	pinus.init({
         host: ACS_CONFIG.pinusServer.gateHost,
         port: ACS_CONFIG.pinusServer.gatePort,
 		log: true
 	}, function() {
-		pomelo.request(route, {
+		pinus.request(route, {
 			uid: uid
 		}, function(data) {
-            pomelo.disconnect();
+            pinus.disconnect();
             data.host = ACS_CONFIG.pinusServer.connectorHost;
             if (data.port == 3050) {
                 data.port = ACS_CONFIG.pinusServer.connectorPort;
@@ -186,7 +186,7 @@ $(document).ready(function() {
 	showLogin();
 
 	//wait message from the server.
-	pomelo.on('onChat', function(data) {
+	pinus.on('onChat', function(data) {
 		console.info("onChat",data)
 		addMessage(data.from, data.target, data.msg);
 		$("#chatHistory").show();
@@ -195,7 +195,7 @@ $(document).ready(function() {
 	});
 
 	//update user list
-	pomelo.on('onAdd', function(data) {
+	pinus.on('onAdd', function(data) {
 		console.info("onAdd",data)
 		var user = data.user;
 		// tip('online', user);
@@ -203,7 +203,7 @@ $(document).ready(function() {
 	});
 
 	//update user list
-	pomelo.on('onLeave', function(data) {
+	pinus.on('onLeave', function(data) {
 		console.info("onLeave",data)
 		var user = data.user;
 		// tip('offline', user);
@@ -212,7 +212,7 @@ $(document).ready(function() {
 
 
 	//handle disconect message, occours when the client is disconnect with servers
-	pomelo.on('disconnect', function(reason) {
+	pinus.on('disconnect', function(reason) {
 		showLogin();
 	});
 
@@ -234,13 +234,13 @@ $(document).ready(function() {
 		//query entry of connection
 		queryEntry(username, function(host, port) {
 			console.warn("初始化的接口",host,port)
-			pomelo.init({
+			pinus.init({
 				host: host,
 				port: port,
 				log: true
 			}, function() {
 				var route = "connector.entryHandler.enter";
-				pomelo.request(route, {
+				pinus.request(route, {
 					username: username,
 					rid: rid
 				}, function(data) {
@@ -265,7 +265,7 @@ $(document).ready(function() {
 		if(e.keyCode != 13 /* Return */ ) return;
 		var msg = $("#entry").attr("value").replace("\n", "");
 		if(!util.isBlank(msg)) {
-			pomelo.request(route, {
+			pinus.request(route, {
 				rid: rid,
 				content: msg,
 				from: username,

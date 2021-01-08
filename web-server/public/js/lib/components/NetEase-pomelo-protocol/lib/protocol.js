@@ -86,7 +86,7 @@
   /**
    * Package protocol encode.
    *
-   * Pomelo package format:
+   * pinus package format:
    * +------+-------------+------------------+
    * | type | body length |       body       |
    * +------+-------------+------------------+
