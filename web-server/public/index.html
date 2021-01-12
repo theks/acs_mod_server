@@ -24,8 +24,8 @@
     
     <body>
         <div id="app">
-            <div id="loginView">
-                <div id="loginTitle">
+            <div id="loginView" class="loginView">
+                <div id="loginTitle" class="loginTitle">
                     异界酒馆
                 </div>
                 <table>
@@ -38,13 +38,50 @@
                         <td>
                             <input name="channels" type="text" id="channelList" disabled="true" placeholder="创建一个房间" value="大厅" />
                         </td>
+                    </tr>
                         <tr>
                             <td>
                                 <input id="login" type='button' value="进入" />
+                                <a href="javascript:void(0);" id="r_register">新用户注册</a>
                             </td>
                         </tr>
                 </table>
-                <div id="loginError">
+                <div id="loginError" class="loginError">
+                </div>
+            </div>
+            <div id="registerView" class="loginView">
+                <div class="registerTitle">
+                    新用户注册
+                </div>
+                <table>
+                    <tr>
+                        <td>
+                            <input id="r_uname" type="text" placeholder="请输入用户名" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input id="r_pwd" type="password" placeholder="请输入密码" value="" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input id="r_repwd" type="password" placeholder="请重复密码" value="" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input id="r_email" type="text" placeholder="请输入电子邮箱" value="" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input id="register" type='button' value="注册" />
+                            <a href="javascript:void(0);" id="r_login">返回登录</a>
+                        </td>
+                    </tr>
+                </table>
+                <div id="registerError" class="loginError">
                 </div>
             </div>
             <div id="chatHistory">

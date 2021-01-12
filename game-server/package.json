@@ -1,6 +1,6 @@
 {
     "name": "otherworldhotel",
-    "version": "0.0.1",
+    "version": "0.1.0",
     "private": false,
     "bin": {
         "$": "./dist/bin/app.js"
@@ -11,14 +11,21 @@
         "build": "node_modules/.bin/tsc"
     },
     "dependencies": {
-        "@types/node": "8.10.54",
         "@types/bluebird": "^3.5.19",
-        "pinus": "1.4.10",
+        "@types/node": "8.10.54",
+        "@types/react": "^17.0.0",
         "bluebird": "^3.5.1",
-		"mysql": ">=2.0",
-        "wordpress-hash-node": "1.0.0",
+        "bufferutil": "^4.0.1",
+        "mysql-connection-pool-manager": "^1.5.9",
+        "node-sql-mapper": "^2.0.4",
+        "pinus": "1.4.10",
+        "pinus-robot": "^1.4.2",
+        "pinus-robot-plugin": "^1.4.2",
+        "pomelo-sync-plugin": "0.0.2",
+        "reflect-metadata": "^0.1.10",
         "source-map-support": "^0.5.0",
-        "reflect-metadata": "^0.1.10"
+        "utf-8-validate": "^5.0.2",
+        "wordpress-hash-node": "1.0.0"
     },
     "devDependencies": {
         "tslint": "5.20.1",

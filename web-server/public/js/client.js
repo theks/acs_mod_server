@@ -140,16 +140,28 @@ function showError(content) {
 
 // show login panel
 function showLogin() {
-	$("#loginView").show();
+    $("#loginView").show();
+    $("#registerView").hide();
 	$("#chatHistory").hide();
 	$("#toolbar").hide();
 	$("#loginError").hide();
 	$("#loginUser").focus();
 };
 
+// show register panel
+function showRegister() {
+    $("#registerView").show();
+    $("#loginView").hide();
+    $("#chatHistory").hide();
+    $("#toolbar").hide();
+    $("#loginError").hide();
+    $("#loginUser").focus();
+};
+
 // show chat panel
 function showChat() {
-	$("#loginView").hide();
+    $("#loginView").hide();
+    $("#registerView").hide();
 	$("#loginError").hide();
 	$("#toolbar").show();
 	$("entry").focus();
@@ -216,6 +228,9 @@ $(document).ready(function() {
 		showLogin();
 	});
 
+    $("#r_register").click(function () { showRegister(); })
+    $("#r_login").click(function () { showLogin(); })
+
 	//deal with login button click.
 	$("#login").click(function() {
 		username = $("#loginUser").attr("value");
@@ -255,7 +270,34 @@ $(document).ready(function() {
 				});
 			});
 		});
-	});
+    });
+    
+
+    $("#register").click(function () {
+        var route = 'gate.gateHandler.register';
+        pinus.init({
+            host: ACS_CONFIG.pinusServer.gateHost,
+            port: ACS_CONFIG.pinusServer.gatePort,
+            log: true
+        }, function () {
+            pinus.request(route, {
+                userName: $("#r_uname").val(),
+                password: $("#r_pwd").val(),
+                email: $("#r_email").val()
+            }, function (data) {
+                pinus.disconnect();
+                data.host = ACS_CONFIG.pinusServer.connectorHost;
+                if (data.port == 3050) {
+                    data.port = ACS_CONFIG.pinusServer.connectorPort;
+                }
+                if (data.code === 500) {
+                    showError(LOGIN_ERROR);
+                    return;
+                }
+                //callback(data.host, data.port);
+            });
+        });
+    });
 
 	//deal with chat mode.
 	$("#entry").keypress(function(e) {
