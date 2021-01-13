@@ -283,19 +283,16 @@ $(document).ready(function() {
             pinus.request(route, {
                 userName: $("#r_uname").val(),
                 password: $("#r_pwd").val(),
+                nickName: $("#r_nname").val(),
                 email: $("#r_email").val()
-            }, function (data) {
-                pinus.disconnect();
-                data.host = ACS_CONFIG.pinusServer.connectorHost;
-                if (data.port == 3050) {
-                    data.port = ACS_CONFIG.pinusServer.connectorPort;
-                }
-                if (data.code === 500) {
-                    showError(LOGIN_ERROR);
-                    return;
-                }
-                //callback(data.host, data.port);
-            });
+            },
+                function (data) {
+                    if (data.code == 200) {
+                        $("#registerError").text("用户注册成功");
+                    } else {
+                        $("#registerError").text(data.msg);
+                    }
+                });
         });
     });
 
