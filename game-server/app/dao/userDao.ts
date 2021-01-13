@@ -6,15 +6,18 @@ import MysqlClient from './mysqlClient';
 export default class UserDao {
     static hasher = require('wordpress-hash-node');
     static async userLogin(userName: string, password: string) {
-        const raw = await pinus.app.get('dbclient').aquery("select * from wp_users where user_login=?;", [userName]);
+        var user;
+        const raw = await pinus.app.get('dbclient').aquery("CALL OH_UserLogin(?);", [userName]);
         if (!raw.err && raw.res && raw.res.length > 0) {
-            let user = new User();
-            // todo:
-            return raw.res[0];
+            user = raw.res[0][0];
+            if (user.uid > 0) {
+                user.isValid = this.hasher.CheckPassword(password, user.enc_pwd);
+            }
         }
+        return user;
     }
 
-    static async createUser(userInfo: any) {
+    static async userCreate(userInfo: any) {
         let hash = this.hasher.HashPassword(userInfo.password);
         const raw = await pinus.app.get('dbclient').aquery("CALL OH_CreateUser(?,?,?,?,@err,@msg); SELECT @err,@msg;", [userInfo.userName, hash, userInfo.nickName, userInfo.email]);
         if (!raw.err && raw.res && raw.res.length > 1) {

@@ -132,10 +132,22 @@ function setRoom() {
 	$("#room").text(rid);
 };
 
-// show error
-function showError(content) {
+// show login error
+function showLoginError(content) {
 	$("#loginError").text(content);
 	$("#loginError").show();
+};
+
+// show Register error
+function showRegisterError(content) {
+    $("#registerError").text(content).show();
+    $("#registerSuccess").hide();
+};
+
+// show Register success
+function showRegisterSuccess() {
+    $("#registerError").hide();
+    $("#registerSuccess").show();
 };
 
 // show login panel
@@ -185,7 +197,7 @@ function queryEntry(uid, callback) {
                 data.port = ACS_CONFIG.pinusServer.connectorPort;
             }
 			if(data.code === 500) {
-				showError(LOGIN_ERROR);
+				showLoginError(LOGIN_ERROR);
 				return;
 			}
 			callback(data.host, data.port);
@@ -231,68 +243,130 @@ $(document).ready(function() {
     $("#r_register").click(function () { showRegister(); })
     $("#r_login").click(function () { showLogin(); })
 
-	//deal with login button click.
-	$("#login").click(function() {
-		username = $("#loginUser").attr("value");
-		rid = $('#channelList').val();
+	// //deal with login button click.
+	// $("#login").click(function() {
+	// 	username = $("#loginUser").attr("value");
+	// 	rid = $('#channelList').val();
 
-		if(username.length > 20 || username.length == 0 || rid.length > 20 || rid.length == 0) {
-			showError(LENGTH_ERROR);
-			return false;
-		}
+	// 	if(username.length > 20 || username.length == 0 || rid.length > 20 || rid.length == 0) {
+	// 		showLoginError(LENGTH_ERROR);
+	// 		return false;
+	// 	}
 
-		if(!reg.test(username) || !reg.test(rid)) {
-			showError(NAME_ERROR);
-			return false;
-		}
+	// 	if(!reg.test(username) || !reg.test(rid)) {
+	// 		showLoginError(NAME_ERROR);
+	// 		return false;
+	// 	}
 
-		//query entry of connection
-		queryEntry(username, function(host, port) {
-			console.warn("初始化的接口",host,port)
-			pinus.init({
-				host: host,
-				port: port,
-				log: true
-			}, function() {
-				var route = "connector.entryHandler.enter";
-				pinus.request(route, {
-					username: username,
-					rid: rid
-				}, function(data) {
-					if(data.error) {
-						showError(DUPLICATE_ERROR);
-						return;
-					}
-					setName();
-					setRoom();
-					showChat();
-					initUserList(data);
-				});
-			});
-		});
+	// 	//query entry of connection
+	// 	queryEntry(username, function(host, port) {
+	// 		console.warn("初始化的接口",host,port)
+	// 		pinus.init({
+	// 			host: host,
+	// 			port: port,
+	// 			log: true
+	// 		}, function() {
+	// 			var route = "connector.entryHandler.enter";
+	// 			pinus.request(route, {
+	// 				username: username,
+	// 				rid: rid
+	// 			}, function(data) {
+	// 				if(data.error) {
+	// 					showLoginError(DUPLICATE_ERROR);
+	// 					return;
+	// 				}
+	// 				setName();
+	// 				setRoom();
+	// 				showChat();
+	// 				initUserList(data);
+	// 			});
+	// 		});
+	// 	});
+    // });
+
+
+    //deal with login button click.
+    $("#login").click(function () {
+        var route = 'gate.gateHandler.userLogin';
+        var uname = $("#loginUser").val();
+        var pwd = $('#loginPwd').val();
+
+        if (!(/^[\w-]+@[\w-]+(\.[\w-]+)+$/).test(uname)) {
+            if (!(/^\w{4,16}$/).test(uname)) {
+                showLoginError("用户名或邮箱格式不正确");
+                return false;
+            }
+        }
+        if (pwd.length < 6 || pwd.length > 20) {
+            showLoginError("密码长度不能少于6位或超过20位");
+            return false;
+        }
+
+        pinus.init({
+            host: ACS_CONFIG.pinusServer.gateHost,
+            port: ACS_CONFIG.pinusServer.gatePort,
+            log: false
+        }, function () {
+            pinus.request(route, {
+                uname: uname,
+                pwd: pwd
+            },
+                function (data) {
+                    pinus.disconnect();
+                    if (data.code == 200) {
+                        // todo:进入聊天室
+                        console.log(data);
+                    } else {
+                        showLoginError(data.msg);
+                    }
+                });
+        });
+
     });
     
 
     $("#register").click(function () {
         var route = 'gate.gateHandler.register';
+        var uname = $("#r_uname").val();
+        var pwd = $("#r_pwd").val();
+        var nname = $("#r_nname").val();
+        var email = $("#r_email").val();
+        if (!(/^\w{4,16}$/).test(uname)) {
+            showRegisterError("用户名只能由4-16位英文字母、数字、下划线组成");
+            return false;
+        }
+        if (!(/^[\w\u4E00-\u9FA5]{2,8}$/).test(nname)) {
+            showRegisterError("昵称只能由2-8位中英文字符、数字、下划线组成");
+            return false;
+        }
+        if (pwd.length < 6 || pwd.length > 20) {
+            showRegisterError("密码长度不能少于6位或超过20位");
+            return false;
+        }
+        if ($("#r_repwd").val() != pwd) {
+            showRegisterError("两次输入密码不一致");
+            return false;
+        }
+        if (!(/^[\w-]+@[\w-]+(\.[\w-]+)+$/).test(email)) {
+            showRegisterError("电子邮箱格式不正确");
+            return false;
+        }
+
         pinus.init({
             host: ACS_CONFIG.pinusServer.gateHost,
             port: ACS_CONFIG.pinusServer.gatePort,
-            log: true
+            log: false
         }, function () {
-            pinus.request(route, {
-                userName: $("#r_uname").val(),
-                password: $("#r_pwd").val(),
-                nickName: $("#r_nname").val(),
-                email: $("#r_email").val()
-            },
+            pinus.request(route, { userName: uname, password: pwd, nickName: nname, email: email },
                 function (data) {
+                    pinus.disconnect();
                     if (data.code == 200) {
-                        $("#registerError").text("用户注册成功");
+                        showRegisterSuccess();
                     } else {
-                        $("#registerError").text(data.msg);
+                        showRegisterError(data.msg);
                     }
-                });
+                }
+            );
         });
     });
 
