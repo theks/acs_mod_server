@@ -31,6 +31,7 @@ export class AuthRemoter {
         return true;
     }
 
+    
     public async add(uid: string, sid: string, rid: string, flag: boolean) {
         let channale = this.app.get("channelService").getChannel(rid, flag); //如果没有该房间，flag为true则自动创建
         let username = uid.split('*')[0];

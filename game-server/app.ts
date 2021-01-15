@@ -1,10 +1,19 @@
-import { pinus } from 'pinus';
+import { pinus, Application, IApplicationEvent } from 'pinus';
 import { preload } from './preload';
 import MysqlClient from './app/dao/mysqlClient';
 import { components as syncPluginPath } from 'pomelo-sync-plugin';
+import UserService from './app/common/UserService';
 
 const HEARTBEAT = 60;
 const DB_SYNC_INTERVAL = 60 * 1000;
+
+
+
+declare global {
+    interface ApplicationEx extends Application {
+        userService: UserService;
+    }
+}
 
 
 /**
@@ -17,7 +26,7 @@ preload();
 /**
  * Init app for client.
  */
-let app = pinus.createApp();
+let app = <ApplicationEx>pinus.createApp();
 app.set('name', 'otherworldhotel');
 
 // app configuration
@@ -25,7 +34,7 @@ app.configure('production|development', 'connector', function () {
     app.set('connectorConfig',
         {
             connector: pinus.connectors.hybridconnector,
-            heartbeat: 60,
+            heartbeat: HEARTBEAT,
             useDict: true,
             useProtobuf: true
         });
@@ -70,6 +79,27 @@ app.configure('production|development', 'gate', function () {
         interval: DB_SYNC_INTERVAL
     });
 });
+
+
+class EventX implements IApplicationEvent {
+    start_server(serverId: string) {
+        if (!app.isMaster()) {
+            app.userService = new UserService(app);
+        }
+
+        // if (serverId.startsWith("login")) {
+        //     app.robotService = new RobotService(app);
+        // } else if (serverId.startsWith("game")) {
+        //     app.roomService = new RoomService(app, <RoomConfig>{
+        //         initRoomCount: 30,
+        //         maxPlayer: 4,
+        //         timeWaitAction: 15 * 1000,
+        //     });
+        // }
+    }
+}
+
+app.loadEvent(EventX, null)
 
 // start app
 app.start();
