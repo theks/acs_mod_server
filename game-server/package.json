@@ -16,6 +16,7 @@
         "@types/react": "^17.0.0",
         "bluebird": "^3.5.1",
         "bufferutil": "^4.0.1",
+        "crc": "3.8.0",
         "mysql-connection-pool-manager": "^1.5.9",
         "node-sql-mapper": "^2.0.4",
         "pinus": "1.4.10",
@@ -24,9 +25,9 @@
         "pomelo-sync-plugin": "0.0.2",
         "reflect-metadata": "^0.1.10",
         "source-map-support": "^0.5.0",
+        "token": "^0.1.0",
         "utf-8-validate": "^5.0.2",
-        "wordpress-hash-node": "1.0.0",
-        "crc": "3.8.0"
+        "wordpress-hash-node": "1.0.0"
     },
     "devDependencies": {
         "tslint": "5.20.1",
